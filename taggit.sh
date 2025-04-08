@@ -26,4 +26,4 @@ fi
 
 echo "Tag '$1' created and pushed successfully."
 
-git tag -n%
+git tag -n

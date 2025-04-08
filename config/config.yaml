@@ -1,0 +1,40 @@
+# Interface side configuration ------------------------------------------------------------------------------------
+page_title : "NeuronGraph Artmind"
+artmind_server_url : "http://localhost:5010/dialog"
+database_config_server_url : "postgresql+psycopg2://sdas:sdas@localhost/artmind_config"
+database_data_server_url : "postgresql+psycopg2://sdas:sdas@localhost/artmind_data"
+file_storage : "./storage/files"
+
+persona_models:
+  Chat:
+    persona_name: Chat
+    model: llama3.2
+    llm_host: ollama #openai    
+    base_url: http://localhost:11434 #https://api.openai.com/v1
+    api_key: YOUR_CHAT_API_KEY
+    icon: 💬
+    persona_prompt: "You are good at general tasks that is expected of an llm in terms of language and advice"    
+  Documents:
+    persona_name: Documents
+    model: llama3.2
+    llm_host: ollama #openai    
+    base_url: http://localhost:11434 #https://api.openai.com/v1
+    api_key: YOUR_CHAT_API_KEY
+    icon: 📖
+    persona_prompt: "Your primary function is to find relevant information in stored documents and provide accurate answers based solely on the document contents."    
+  Data:
+    persona_name: Database
+    model: phi4 #mannix/defog-llama3-sqlcoder-8b
+    llm_host: ollama
+    base_url: http://localhost:11434
+    api_key: YOUR_DATA_API_KEY
+    icon: 📊
+    persona_prompt: "You are good with numbers and can understand database schemas and SQL query language"
+  Second_brain:
+    persona_name: Second_brain
+    model: bard
+    llm_host: google
+    base_url: https://bard.google.com
+    api_key: YOUR_SECOND_BRAIN_API_KEY
+    icon: 🧠
+    persona_prompt: "You are a second brain that can help personal knowledge, information and tasks"    

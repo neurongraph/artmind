@@ -1,5 +1,0 @@
-page_title : "NeuronGraph Artmind"
-artmind_server_url : "http://localhost:5010/dialog"
-database_config_server_url : "postgresql+psycopg2://sdas:sdas@localhost/artmind_config"
-database_data_server_url : "postgresql+psycopg2://sdas:sdas@localhost/artmind_data"
-file_storage : "./storage/files"
