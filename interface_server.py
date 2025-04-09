@@ -57,57 +57,28 @@ def main():
     st.sidebar.divider()
 
     # Handle chat history
-    histories = chat_manager.get_chat_histories(user_name=state.user_name)
-    history_options = ["New Chat"]
-    history_dict = {"New Chat": None}
-    existing_titles = set()
-    
-    if histories:
-        for history in histories:
-            option_text = history["title"]
-            history_options.append(option_text)
-            history_dict[option_text] = history["id"]
-            existing_titles.add(option_text)
-    
+    history_options, history_dict, existing_titles = chat_manager.build_history_options(state.user_name)
+
     selected_chat = st.sidebar.selectbox(
         "Select Chat",
         options=history_options,
         key="chat_history_dropdown"
     )
-    
+
     # Handle chat selection
     if selected_chat != "New Chat":
         history_id = history_dict[selected_chat]
         if history_id != state.current_history_id:
-            try:
-                history = chat_manager.get_chat_history(history_id)
-                if history:
-                    state.history = history["messages"]
-                    state.current_history_id = history_id
-                    st.rerun()
-            except Exception as e:
-                logger.error(f"Failed to load chat history: {str(e)}")
+            if chat_manager.load_chat_history(state, history_id):
+                st.rerun()
+            else:
                 st.sidebar.error("Failed to load chat history")
 
     # New Chat button
     if st.sidebar.button("Start New Chat", type="primary"):
-        try:
-            if state.history and len(state.history) > 1:
-                title = "New Chat"
-                for message in state.history:
-                    if message["role"] == "user":
-                        title = chat_manager.generate_chat_title(message["content"], existing_titles)
-                        break
-                
-                chat_manager.save_chat_history(state.user_name, state.persona_selected, state.history, title)
-                logger.info(f"Saved chat history with title: {title}")
-            
-            current_persona = state.persona_selected
-            state.clear_chat()
-            state.persona_selected = current_persona
+        if chat_manager.save_and_reset_chat(state, existing_titles):
             st.rerun()
-        except Exception as e:
-            logger.error(f"Failed to handle new chat: {str(e)}")
+        else:
             st.sidebar.error("Failed to start new chat")
     
     # Display chat history and handle new messages

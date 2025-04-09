@@ -157,9 +157,58 @@ class ChatHistoryManager:
             logger.error(f"Error retrieving chat history: {str(e)}")
             raise
 
+    def build_history_options(self, user_name, limit=10):
+        """Build chat history options and mapping for the UI."""
+        histories = self.get_chat_histories(user_name=user_name, limit=limit)
+        history_options = ["New Chat"]
+        history_dict = {"New Chat": None}
+        existing_titles = set()
+
+        for history in histories:
+            option_text = history["title"]
+            history_options.append(option_text)
+            history_dict[option_text] = history["id"]
+            existing_titles.add(option_text)
+
+        return history_options, history_dict, existing_titles
+
+    def load_chat_history(self, state, history_id):
+        """Load a specific chat history into the session state."""
+        try:
+            history = self.get_chat_history(history_id)
+            if history:
+                state.history = history["messages"]
+                state.current_history_id = history_id
+                return True
+        except Exception as e:
+            logger.error(f"Failed to load chat history: {str(e)}")
+        return False
+
+    def save_and_reset_chat(self, state, existing_titles):
+        """Save the current chat history and reset the session state."""
+        try:
+            if state.history and len(state.history) > 1:
+                title = "New Chat"
+                for message in state.history:
+                    if message["role"] == "user":
+                        title = self.generate_chat_title(message["content"], existing_titles)
+                        break
+
+                self.save_chat_history(state.user_name, state.persona_selected, state.history, title)
+                logger.info(f"Saved chat history with title: {title}")
+
+            # Reset session state
+            current_persona = state.persona_selected
+            state.clear_chat()
+            state.persona_selected = current_persona
+            return True
+        except Exception as e:
+            logger.error(f"Failed to save and reset chat: {str(e)}")
+            return False
+
     def close(self):
         """Close the database session."""
         try:
             self.session.close()
         except Exception as e:
-            logger.error(f"Error closing chat history session: {str(e)}") 
+            logger.error(f"Error closing chat history session: {str(e)}")
