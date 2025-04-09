@@ -1,7 +1,6 @@
 from brain.models.base_model import BaseModel
 from .model_factory import ModelFactory
 from loguru import logger
-import json
 
 class DomainRouter:
     def __init__(self, config):

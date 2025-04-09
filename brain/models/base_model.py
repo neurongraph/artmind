@@ -5,6 +5,6 @@ class BaseModel(ABC):
     def chat(self, messages, stream=False):
         pass
 
-    # @abstractmethod
-    # def embed(self, input_texts):
-    #     pass
+    @abstractmethod
+    def embed(self, input_texts):
+        pass

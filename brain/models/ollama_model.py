@@ -48,3 +48,23 @@ class OllamaModel(BaseModel):
             )
             logger.deep_debug(f"Response received: {response}")
             return {'message': {'role': 'assistant', 'content': response['message']['content']}}
+
+    def embed(self, input_texts):
+        if isinstance(input_texts, str):
+            input_texts = [input_texts]
+
+        embeddings = []
+        for text in input_texts:
+            response = ollama.embeddings(
+                model=self.model,
+                prompt=text
+            )
+            embeddings.append(response["embedding"])
+        
+        # Log some debugging info
+        if embeddings:
+            logger.deep_debug(f"Generated {len(embeddings)} embeddings")
+            logger.deep_debug(f"Embedding dimension: {len(embeddings[0])}")
+            logger.deep_debug(f"Sample values: {embeddings[0][:5]}") 
+        
+        return embeddings
